@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Number of Islands</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .grid { display: grid; grid-template-columns: repeat(5, 40px); gap: 5px; margin: 20px auto; }
+        .cell {
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #ccc; cursor: pointer;
+            background-color: lightblue;
+        }
+        .land { background-color: green; color: white; }
+        button { padding: 10px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Number of Islands (Click to Toggle Land/Water)</h2>
+    <div id="grid" class="grid"></div>
+    <button onclick="countIslands()">Count Islands</button>
+    <h3 id="result"></h3>
+
+    <script>
+        const rows = 5, cols = 5;
+        let grid = Array.from({ length: rows }, () => Array(cols).fill('W'));
+
+        const gridDiv = document.getElementById('grid');
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                let cell = document.createElement('div');
+                cell.className = 'cell';
+                cell.onclick = () => {
+                    grid[r][c] = grid[r][c] === 'L' ? 'W' : 'L';
+                    cell.classList.toggle('land');
+                };
+                gridDiv.appendChild(cell);
+            }
+        }
+
+        function countIslands() {
+            let visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+            let directions = [
+                [-1, -1], [-1, 0], [-1, 1],
+                [0, -1],          [0, 1],
+                [1, -1],  [1, 0], [1, 1]
+            ];
+
+            function dfs(r, c) {
+                visited[r][c] = true;
+                for (let [dr, dc] of directions) {
+                    let nr = r + dr, nc = c + dc;
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols &&
+                        !visited[nr][nc] && grid[nr][nc] === 'L') {
+                        dfs(nr, nc);
+                    }
+                }
+            }
+
+            let count = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (!visited[r][c] && grid[r][c] === 'L') {
+                        count++;
+                        dfs(r, c);
+                    }
+                }
+            }
+            document.getElementById('result').textContent = "Number of islands: " + count;
+        }
+    </script>
+</body>
+</html>
